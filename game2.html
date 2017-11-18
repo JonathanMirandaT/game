@@ -1,0 +1,179 @@
+<canvas id="ctx" width="500" height="500" style="border:1px solid #000000;"></canvas>
+
+
+<script>
+
+var ctx = document.getElementById("ctx").getContext("2d");
+ctx.font = '30px Ariel';
+
+var message = 'Bouncing';
+var WIDTH = 500;
+var HEIGHT = 500;
+var timeWhenGameStarted = Date.now();
+
+//player
+var player = {
+	x:50,
+	distX:30,
+	y:50,
+	distY:5,
+	name:'P',
+	hp:10,
+}
+
+
+
+var enemyList = {}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+getDistanceBetweenEntity = function (entity1, entity2){
+
+
+var vx = entity1.x - entity2.x;
+var vy = entity1.y - entity2.y;
+
+return Math.sqrt(vx*vx+vy*vy);
+
+
+}
+
+
+testCollitionEntity = function (entity1, entity2){
+
+var distance = getDistanceBetweenEntity(entity1, entity2);
+return distance < 30;
+
+}
+
+
+
+ Enemy = function(id, x, y, distX, distY){
+
+var enemy3 = {
+	x:x,
+	distX:distX,
+	y:y,
+	distY:distY,
+	name:'E',
+	id:id,
+};
+enemyList[id] = enemy3;
+
+
+}
+
+
+
+document.onmousemove = function(mouse){
+
+var mouseX = mouse.clientX;
+var mouseY = mouse.clientY;
+
+player.x = mouseX;
+player.y = mouseY;
+
+}
+
+
+updateEntity = function (something){
+
+updateEntityPosition(something);
+drawEntity(something);
+
+
+
+
+}
+
+
+
+
+
+updateEntityPosition = function(something){
+
+something.x += something.distX;
+something.y += something.distY;
+
+if(something.x < 0 || something.x > WIDTH){
+
+	something.distX = -something.distX;
+	
+}
+
+if(something.y < 0 || something.y > HEIGHT){
+
+	something.distY = -something.distY;
+	
+}
+
+
+}
+
+
+drawEntity = function(something){
+ctx.fillText(something.name, something.x, something.y);
+}
+
+
+
+
+
+update = function (){
+
+
+ctx.clearRect(0, 0, WIDTH, HEIGHT)
+
+
+for(var key in enemyList){
+updateEntity(enemyList[key]);
+
+var isColliding = testCollitionEntity(player, enemyList[key]);
+
+if (isColliding){
+
+player.hp = player.hp - 1;
+if(player.hp <= 0){
+var timeSurvived = Date.now() - timeWhenGameStarted;
+
+console.log('You Lost, you survived for ' + timeSurvived + ' ms');
+timeWhenGameStarted = Date.now();
+player.hp = 10;
+
+}
+
+}
+
+}
+
+drawEntity(player);
+ctx.fillText(player.hp + " Lives",0, 30 )
+
+
+
+}
+
+
+Enemy('E1', 150, 350, 10, 15);
+Enemy('E2', 250, 250, 10, -15);
+Enemy('E3', 11, 150, 10, -8);
+
+
+setInterval(update, 40);
+
+
+
+
+
+</script>
